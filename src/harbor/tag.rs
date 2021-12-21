@@ -25,12 +25,12 @@ pub struct Tag {
 }
 
 impl Client {
-    pub async fn list_tags(&self, repo_name: String, label_id: Option<String>, detail: Option<bool>) -> Result<Vec<Tag>> {
+    pub async fn list_tags(&self, repo_name: &str, label_id: Option<&str>, detail: Option<bool>) -> Result<Vec<Tag>> {
         let url = self.build_api(format!("repositories/{}/tags", repo_name));
         let req = self.client.get(url);
         let mut query: Vec<(String, String)> = Vec::new();
         if let Some(label_id) = label_id {
-            query.append(&mut vec![(String::from("label"), label_id.clone())]);
+            query.append(&mut vec![(String::from("label"), label_id.to_string())]);
         }
         if let Some(detail) = detail {
             query.append(&mut vec![(String::from("detail"), detail.clone().to_string())]);
@@ -40,10 +40,9 @@ impl Client {
         Ok(tags)
     }
 
-    pub async fn delete_tag(&self, repo_name: String, tag_name: String) -> Result<()> {
+    pub async fn delete_tag(&self, repo_name: &str, tag_name: &str) -> Result<()> {
         let url = self.build_api(format!("repositories/{}/tags/{}", repo_name, tag_name));
-        let req = self.client.delete(url);
-        let resp = req.send().await?;
+        let resp = self.client.delete(url).send().await?;
         if resp.status().is_success() {
             Ok(())
         } else {

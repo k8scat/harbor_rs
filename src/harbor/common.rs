@@ -20,7 +20,7 @@ pub struct Label {
     pub name: String
 }
 
-pub fn parse_time(time: &str) -> Result<DateTime<Local>> {
+pub fn parse_time(time: String) -> Result<DateTime<Local>> {
     Ok(time.parse::<DateTime<Local>>()?)
 }
 

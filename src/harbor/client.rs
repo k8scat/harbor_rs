@@ -4,8 +4,6 @@ use anyhow::Result;
 
 pub struct Client {
     base_url: String,
-    username: String,
-    password: String,
     pub client: reqwest::Client,
 }
 
@@ -14,8 +12,6 @@ impl Client {
         let token = base64::encode(format!("{}:{}", username, password));
         let client = Client {
             base_url,
-            username,
-            password,
             client: reqwest::Client::builder()
                 .timeout(core::time::Duration::from_secs(60))
                 .default_headers(

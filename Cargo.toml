@@ -1,9 +1,11 @@
 [package]
 name = "harbor_rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Harbor SDK for Rust"
 license = "MIT"
+homepage = "https://github.com/k8scat/harbor_rs"
+authors = ["k8scat <rustpanic@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -15,3 +17,9 @@ chrono = "0.4.19"
 base64 = "0.13.0"
 serde_json = "1.0.73"
 serde = { version = "1.0.132", features = ["derive"] }
+clap = "2.34.0"
+serde_yaml = "0.8.23"
+
+[[bin]]
+name = "clean-harbor-images"
+path = "src/bin/clean-harbor-images.rs"
