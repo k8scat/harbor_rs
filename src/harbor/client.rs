@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use anyhow::{anyhow, Result};
-use reqwest::IntoUrl;
+use reqwest::{IntoUrl, Method};
 
 #[derive(Debug)]
 pub struct Client {
@@ -37,29 +37,13 @@ impl Client {
             password.to_string())?)
     }
 
-    pub fn post<U: IntoUrl>(&self, path: U) -> reqwest::RequestBuilder {
+    pub fn build_request<U: IntoUrl>(&self, method: Method, path: U) -> reqwest::RequestBuilder {
         let url = self.build_url(path);
-        self.client.post(&url)
-    }
-
-    pub fn get<U: IntoUrl>(&self, path: U) -> reqwest::RequestBuilder {
-        let url = self.build_url(path);
-        self.client.get(&url)
-    }
-
-    pub fn delete<U: IntoUrl>(&self, path: U) -> reqwest::RequestBuilder {
-        let url = self.build_url(path);
-        self.client.delete(&url)
-    }
-
-    pub fn put<U: IntoUrl>(&self, path: U) -> reqwest::RequestBuilder {
-        let url = self.build_url(path);
-        self.client.put(&url)
+        self.client.request(method, url)
     }
 
     fn build_url<U: IntoUrl>(&self, path: U) -> String {
-        let path = path.as_str().trim_start_matches('/');
-        format!("{}/{}", self.base_url, path)
+        format!("{}{}", self.base_url, path.as_str())
     }
 }
 

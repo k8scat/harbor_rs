@@ -22,7 +22,7 @@ struct Config {
 
 #[tokio::main]
 async fn main() {
-    let matches = App::new("clean-harbor-images")
+    let matches = App::new("clean-image-tags")
         .version("1.0")
         .author("K8sCat <rustpanic@gmail.com>")
         .about("Clean harbor images")

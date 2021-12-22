@@ -1,4 +1,4 @@
-version = 1.10.0
+version = 0.1.2
 upgrade:
 	sed -i "" 's/^version = "[0-9]*.[0-9]*.[0-9]*"/version = "${version}"/' Cargo.toml
 	sed -i "" 's/harbor_rs = "[0-9]*.[0-9]*.[0-9]*"/harbor_rs = "${version}"/g' README.md
@@ -17,5 +17,5 @@ tests:
 	# project tests ordered
 	cargo test --color=always --package harbor_rs --lib harbor::project::tests::list_projects
 
-build-clean-harbor-images:
-	cargo build --release --all-features --bin clean-harbor-images
+build-clean-image-tags:
+	cargo build --release --all-features --bin clean-image-tags

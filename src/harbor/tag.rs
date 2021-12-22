@@ -1,6 +1,8 @@
 use super::client::Client;
 use serde::{Deserialize, Serialize};
 use anyhow::{Result, anyhow};
+use reqwest::{Method, StatusCode};
+use serde_json::Value;
 use crate::harbor::common::Label;
 use super::common::Signature;
 
@@ -16,8 +18,8 @@ pub struct Tag {
     pub size: u64,
     pub signature: Option<Signature>,
     pub labels: Vec<Label>,
-    pub scan_overview: Option<serde_json::Value>,
-    pub config: Option<serde_json::Value>,
+    pub scan_overview: Option<Value>,
+    pub config: Option<Value>,
     pub push_time: String,
     pub pull_time: String,
     #[serde(rename = "os.version")]
@@ -25,9 +27,9 @@ pub struct Tag {
 }
 
 impl Client {
+    /// Get tags of a relevant repository.
     pub async fn list_tags(&self, repo_name: &str, label_id: Option<&str>, detail: Option<bool>) -> Result<Vec<Tag>> {
-        let path = format!("repositories/{}/tags", repo_name);
-        let req = self.get(path);
+        let path = format!("/repositories/{}/tags", repo_name);
         let mut params = Vec::new();
         if let Some(label_id) = label_id {
             params.push(("label", label_id.to_string()));
@@ -35,26 +37,22 @@ impl Client {
         if let Some(detail) = detail {
             params.push(("detail", detail.to_string()));
         }
-        let resp = req.send().await?;
-        let tags = resp.json::<Vec<Tag>>().await?;
-        Ok(tags)
-    }
-
-    pub async fn delete_tag(&self, repo_name: &str, tag_name: &str) -> Result<()> {
-        let path = format!("repositories/{}/tags/{}", repo_name, tag_name);
-        let resp = self.delete(path).send().await?;
-        if resp.status().is_success() {
-            Ok(())
+        let resp = self.build_request(Method::GET, path).query(&params).send().await?;
+        if resp.status().eq(&StatusCode::OK) {
+            Ok(resp.json::<Vec<Tag>>().await?)
         } else {
-            Err(anyhow!("{} {}", resp.status(), resp.text().await?))
+            Err(anyhow!("failed to list tags: {}", resp.text().await?))
         }
     }
-}
 
-#[cfg(test)]
-mod tests {
-    #[tokio::test]
-    async fn test_list_tags() {
-
+    /// Delete a tag in a repository.
+    pub async fn delete_tag(&self, repo_name: &str, tag_name: &str) -> Result<()> {
+        let path = format!("/repositories/{}/tags/{}", repo_name, tag_name);
+        let resp = self.build_request(Method::DELETE, path).send().await?;
+        if resp.status().eq(&reqwest::StatusCode::OK) {
+            Ok(())
+        } else {
+            Err(anyhow!("failed to delete tag: {}", resp.text().await?))
+        }
     }
 }

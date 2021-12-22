@@ -62,7 +62,7 @@ impl Client {
         if let Some(page_size) = page_size {
             params.push(("page_size", page_size.to_string()));
         }
-        let resp = self.get(path).query(&params).send().await?;
+        let resp = self.build_request(reqwest::Method::GET, path).query(&params).send().await?;
         if resp.status() != reqwest::StatusCode::OK {
             return Err(anyhow::anyhow!("failed to list projects: {}", resp.text().await?));
         }
@@ -76,14 +76,24 @@ impl Client {
 
     /// List project webhook jobs
     pub async fn list_webhook_jobs(&self, project_id: i64, policy_id: i64) -> Result<Vec<WebhookJob>> {
-        let path = format!("projects/{}/webhook/jobs", project_id);
+        let path = format!("/projects/{}/webhook/jobs", project_id);
         let params = [("policy_id", policy_id.to_string())];
-        let resp = self.get(path).query(&params).send().await?;
+        let resp = self.build_request(reqwest::Method::GET, path).query(&params).send().await?;
         if resp.status() != reqwest::StatusCode::OK {
             return Err(anyhow::anyhow!("failed to list webhook jobs: {}", resp.text().await?));
         }
         let webhook_jobs = resp.json::<Vec<WebhookJob>>().await?;
         Ok(webhook_jobs)
+    }
+
+    /// Delete project by projectID
+    pub async fn delete_project(&self, id: i64) -> Result<()> {
+        let path = format!("/projects/{}", id);
+        let resp = self.build_request(reqwest::Method::DELETE, path).send().await?;
+        if resp.status() != reqwest::StatusCode::NO_CONTENT {
+            return Err(anyhow::anyhow!("failed to delete project: {}", resp.text().await?));
+        }
+        Ok(())
     }
 }
 
