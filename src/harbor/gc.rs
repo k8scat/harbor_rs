@@ -40,14 +40,14 @@ pub struct GCResult {
     pub deleted: bool,
     pub job_kind: String,
     pub creation_time: String,
-    pub id: u32,
+    pub id: u64,
     pub job_name: String
 }
 
 impl Client {
     pub async fn create_schedule(&self, schedule: &Schedule) -> Result<()> {
-        let url = self.build_api(String::from("system/gc/schedule"));
-        let resp = self.client.post(url)
+        let path = "system/gc/schedule";
+        let resp = self.post(path)
             .header("Content-Type", "application/json")
             .body(format!("{{\"schedule\": {}}}", serde_json::to_string(schedule)?))
             .send()
@@ -60,9 +60,16 @@ impl Client {
     }
 
     pub async fn list_gc_results(&self) -> Result<Vec<GCResult>> {
-        let url = self.build_api(String::from("system/gc"));
-        let resp = self.client.get(url).send().await?;
+        let path = "system/gc";
+        let resp = self.get(path).send().await?;
         let results = resp.json::<Vec<GCResult>>().await?;
         Ok(results)
+    }
+
+    pub async fn get_gc_result(&self, id: u64) -> Result<GCResult> {
+        let path = format!("system/gc/{}", id);
+        let resp = self.get(path).send().await?;
+        let result = resp.json::<GCResult>().await?;
+        Ok(result)
     }
 }

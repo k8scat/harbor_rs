@@ -26,14 +26,14 @@ pub struct Tag {
 
 impl Client {
     pub async fn list_tags(&self, repo_name: &str, label_id: Option<&str>, detail: Option<bool>) -> Result<Vec<Tag>> {
-        let url = self.build_api(format!("repositories/{}/tags", repo_name));
-        let req = self.client.get(url);
-        let mut query: Vec<(String, String)> = Vec::new();
+        let path = format!("repositories/{}/tags", repo_name);
+        let req = self.get(path);
+        let mut params = Vec::new();
         if let Some(label_id) = label_id {
-            query.append(&mut vec![(String::from("label"), label_id.to_string())]);
+            params.push(("label", label_id.to_string()));
         }
         if let Some(detail) = detail {
-            query.append(&mut vec![(String::from("detail"), detail.clone().to_string())]);
+            params.push(("detail", detail.to_string()));
         }
         let resp = req.send().await?;
         let tags = resp.json::<Vec<Tag>>().await?;
@@ -41,12 +41,20 @@ impl Client {
     }
 
     pub async fn delete_tag(&self, repo_name: &str, tag_name: &str) -> Result<()> {
-        let url = self.build_api(format!("repositories/{}/tags/{}", repo_name, tag_name));
-        let resp = self.client.delete(url).send().await?;
+        let path = format!("repositories/{}/tags/{}", repo_name, tag_name);
+        let resp = self.delete(path).send().await?;
         if resp.status().is_success() {
             Ok(())
         } else {
             Err(anyhow!("{} {}", resp.status(), resp.text().await?))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[tokio::test]
+    async fn test_list_tags() {
+
     }
 }

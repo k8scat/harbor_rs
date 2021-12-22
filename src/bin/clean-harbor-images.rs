@@ -54,7 +54,7 @@ fn load_config(path: &str) -> Result<Config> {
 async fn clean(client: &Client, repo: &str, interval: DateTime<Local>) -> Result<()> {
     let tags = client.list_tags(repo, None, Some(true)).await?;
     for tag in tags {
-        let push_time = parse_time(tag.push_time)?;
+        let push_time = parse_time(tag.push_time.as_str())?;
         if push_time.le(&interval) {
             client.delete_tag(repo, tag.name.as_str()).await?;
             println!("deleted {} which pushed at {}", tag.name, push_time.format("%Y-%m-%d %H:%M:%S"));

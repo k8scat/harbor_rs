@@ -1,10 +1,12 @@
 # harbor_rs
 
-[Harbor](https://goharbor.io/) SDK for Rust
+> Harbor API Version: v1.10.0, [v2.0](https://editor.swagger.io/?url=https://raw.githubusercontent.com/goharbor/harbor/master/api/v2.0/swagger.yaml) is coming soon.
+
+[Harbor](https://goharbor.io/) SDK for Rust.
 
 ```toml
 [dependencies]
-harbor_rs = "0.1.1"
+harbor_rs = "1.10.0"
 ```
 
 ## clean-harbor-images
