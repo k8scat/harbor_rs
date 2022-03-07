@@ -1,7 +1,7 @@
 harbor_base_api: "https://example.com/api"
 harbor_username: "admin"
 harbor_password: "admin"
-clean_interval: 20
+clean_interval: 20 # 清理 20 天前构建的镜像
 repos:
   - "test/image1"
   - "test/image2"

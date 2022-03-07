@@ -6,7 +6,7 @@
 
 ```toml
 [dependencies]
-harbor_rs = "0.1.2"
+harbor_rs = "0.1.3"
 ```
 
 ## clean-image-tags

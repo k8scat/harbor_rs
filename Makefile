@@ -1,8 +1,10 @@
-version = 0.1.2
+version = 0.1.3
+.PHONY: upgrade
 upgrade:
-	sed -i "" 's/^version = "[0-9]*.[0-9]*.[0-9]*"/version = "${version}"/' Cargo.toml
-	sed -i "" 's/harbor_rs = "[0-9]*.[0-9]*.[0-9]*"/harbor_rs = "${version}"/g' README.md
+	sed -i "" 's/^version = "[0-9]*.[0-9]*.[0-9]*"/version = "$(version)"/' Cargo.toml
+	sed -i "" 's/harbor_rs = "[0-9]*.[0-9]*.[0-9]*"/harbor_rs = "$(version)"/g' README.md
 
+.PHONY: tests
 tests:
 	# user tests ordered
 	cargo test --color=always --package harbor_rs --lib harbor::user::tests::get_current_user
@@ -17,5 +19,6 @@ tests:
 	# project tests ordered
 	cargo test --color=always --package harbor_rs --lib harbor::project::tests::list_projects
 
+.PHONY: build-clean-image-tags
 build-clean-image-tags:
 	cargo build --release --all-features --bin clean-image-tags
